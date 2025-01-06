@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Society Management</title>
+    <!-- Link to Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url('login_bg_img.webp') no-repeat center center fixed;
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .card-header {
+            background-color: #4e54c8;
+            color: white;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        input {
+            border-radius: 5px !important;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #43cea2, #185a9d);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #185a9d, #43cea2);
+        }
+        .validation-message {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none; /* Initially hidden */
+        }
+        .text-green {
+            color: green;
+        }
+        .text-red {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Sign Up</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="signupForm">
+                            <div class="mb-3">
+                                <label for="societyCode" class="form-label">Society Code</label>
+                                <input type="text" class="form-control" id="societyCode" placeholder="Enter Society Code" required>
+                                <div id="societyValidation" class="validation-message"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" placeholder="Enter Username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Create Password</label>
+                                <input type="password" class="form-control" id="password" placeholder="Enter Password" required>
+                                <div id="passwordCriteria" class="validation-message">
+                                    <ul>
+                                        <li id="lengthCriteria" class="text-red">At least 8 characters</li>
+                                        <li id="alphabetCriteria" class="text-red">At least 1 alphabet</li>
+                                        <li id="numberCriteria" class="text-red">At least 1 number</li>
+                                        <li id="specialCriteria" class="text-red">At least 1 special character</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                                <div id="confirmPasswordMessage" class="validation-message text-red"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const validSocietyCodes = ['ABC123', 'XYZ789']; // Example valid society codes
+    
+        // Society code validation
+        document.getElementById('societyCode').addEventListener('input', function () {
+            const societyCode = this.value.trim();
+            const validationMessage = document.getElementById('societyValidation');
+    
+            if (validSocietyCodes.includes(societyCode)) {
+                validationMessage.textContent = `${societyCode} society validated`;
+                validationMessage.className = 'validation-message text-green';
+                validationMessage.style.display = 'block';
+            } else if (societyCode === '') {
+                validationMessage.style.display = 'none';
+            } else {
+                validationMessage.textContent = 'Invalid society code';
+                validationMessage.className = 'validation-message text-red';
+                validationMessage.style.display = 'block';
+            }
+        });
+    
+        // Password validation
+        const passwordInput = document.getElementById('password');
+        const passwordCriteria = document.getElementById('passwordCriteria');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const confirmPasswordMessage = document.getElementById('confirmPasswordMessage');
+    
+        passwordInput.addEventListener('focus', function () {
+            passwordCriteria.style.display = 'block'; // Show criteria when password input is focused
+        });
+    
+        passwordInput.addEventListener('input', function () {
+            const password = this.value;
+    
+            // Criteria validation
+            document.getElementById('lengthCriteria').className = password.length >= 8 ? 'text-green' : 'text-red';
+            document.getElementById('alphabetCriteria').className = /[A-Za-z]/.test(password) ? 'text-green' : 'text-red';
+            document.getElementById('numberCriteria').className = /[0-9]/.test(password) ? 'text-green' : 'text-red';
+            document.getElementById('specialCriteria').className = /[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'text-green' : 'text-red';
+    
+            // Check confirm password after password length reaches or exceeds
+            if (password.length >= confirmPasswordInput.value.length) {
+                const confirmPassword = confirmPasswordInput.value;
+                if (confirmPassword && confirmPassword !== password) {
+                    confirmPasswordMessage.textContent = 'Passwords do not match';
+                    confirmPasswordMessage.className = 'validation-message text-red';
+                    confirmPasswordMessage.style.display = 'block';
+                } else {
+                    confirmPasswordMessage.style.display = 'none';
+                }
+            }
+        });
+    
+        // Confirm password validation (only after the length of confirm password reaches password length)
+        confirmPasswordInput.addEventListener('input', function () {
+            const password = passwordInput.value;
+            const confirmPassword = this.value;
+    
+            if (confirmPassword.length >= password.length) {
+                if (confirmPassword === password) {
+                    confirmPasswordMessage.textContent = 'Passwords match';
+                    confirmPasswordMessage.className = 'validation-message text-green';
+                    confirmPasswordMessage.style.display = 'block';
+                } else if (confirmPassword !== password) {
+                    confirmPasswordMessage.textContent = 'Passwords do not match';
+                    confirmPasswordMessage.className = 'validation-message text-red';
+                    confirmPasswordMessage.style.display = 'block';
+                }
+            }
+        });
+    
+        // Form submission
+        document.getElementById('signupForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+    
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+    
+            // Final validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+    
+            alert('Sign-up successful! You can now log in.');
+            window.location.href = 'login.html';
+        });
+    </script>    
+</body>
+</html>
